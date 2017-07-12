@@ -1,0 +1,150 @@
+body {
+    margin: 0px;
+    background: #eee;
+}
+
+canvas {
+    background: white;
+}
+
+.header {
+    background: #fc2348;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px;
+    font-family: "微软雅黑";
+}
+
+.btn {
+    background: blue;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    box-shadow: 2px 2px 4px 1px rgba(0, 0, 0, .3);
+    padding: 5px 10px;
+    display: inline-block;
+    margin: 5px;
+}
+
+.btn:active {
+    margin:6px 4px 4px 6px;
+    box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, .3);
+}
+
+ul, li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.lineWidth {
+    display: flex;
+}
+
+.lineWidth>li {
+    text-align: center;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    margin: 5px;
+}
+
+.lineWidth>li:active {
+    border: 1px solid yellow;
+}
+
+.lineWidth>li::after {
+    display: block;
+    content: " ";
+    border-radius: 50%;
+    background: blue;
+}
+
+.lineWidth>li:nth-child(1)::after {
+    width: 2px;
+    height: 2px;
+}
+
+.lineWidth>li:nth-child(2)::after {
+    width: 4px;
+    height: 4px;
+}
+
+.lineWidth>li:nth-child(3)::after {
+    width: 6px;
+    height: 6px;
+}
+
+.lineWidth>li:nth-child(4)::after {
+    width: 8px;
+    height: 8px;
+}
+
+.lineWidth>li:nth-child(5)::after {
+    width: 10px;
+    height: 10px;
+}
+
+.lineWidth>li:nth-child(6)::after {
+    width: 12px;
+    height: 12px;
+}
+
+.lineWidth>li:nth-child(7)::after {
+    width: 14px;
+    height: 14px;
+}
+
+.LCYellow::after {
+    background: yellow!important;
+}
+
+.lineColor {
+    display: flex;
+}
+
+.lineColor>li {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    margin: 5px;
+}
+
+.lineColor>li:active {
+    border: 1px solid yellow;
+}
+
+.lineColor>li:nth-child(1) {
+    background: rgb(255, 255, 255)
+}
+
+.lineColor>li:nth-child(2) {
+    background: rgb(100, 255, 255)
+}
+
+.lineColor>li:nth-child(3) {
+    background: rgb(255, 100, 255)
+}
+
+.lineColor>li:nth-child(4) {
+    background: rgb(255, 255, 100)
+}
+
+.lineColor>li:nth-child(5) {
+    background: rgb(200, 255, 255)
+}
+
+.lineColor>li:nth-child(6) {
+    background: rgb(255, 200, 255)
+}
+
+.lineColor>li:nth-child(7) {
+    background: rgb(255, 255, 200)
+}

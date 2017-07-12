@@ -1,0 +1,14 @@
+{
+  "name": "lambo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "allRegion.js",
+  "scripts": {
+    "dev": "nodemon --exec node socket.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^2.0.3"
+  }
+}
