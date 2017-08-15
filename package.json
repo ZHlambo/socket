@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mysql": "^2.14.1",
     "socket.io": "^2.0.3"
   }
 }
