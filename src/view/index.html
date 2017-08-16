@@ -46,7 +46,7 @@
             <span id='question'>暂无谜题</span>
         </div>
         <script>
-            var socket = io("http://119.29.197.145:9000",{path:"/test"});
+            var socket = io("http://119.29.197.145:9000",{path:"/socket"});
             window.socket = socket;
             socket.on('connect', (data) => {
               console.log("connect success",JSON.stringify(data));
