@@ -3,7 +3,7 @@
 
 <head>
     <title>h5 demo</title>
-    <script src="./data.js" charset="utf-8"></script>
+    <script src="../../data.js" charset="utf-8"></script>
     <script src="https://cdn.bootcss.com/socket.io/2.0.3/socket.io.slim.js"></script>
     <link rel="stylesheet" href="./index.css">
 </head>
@@ -46,7 +46,7 @@
             <span id='question'>暂无谜题</span>
         </div>
         <script>
-            var socket = io("http://119.29.197.145:9000",{path:"/socket"});
+            var socket = io("http://192.168.31.57:9000",{path:"/socket"});
             window.socket = socket;
             socket.on('connect', (data) => {
               console.log("connect success",JSON.stringify(data));

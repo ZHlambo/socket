@@ -49,6 +49,7 @@ server.listen(PROT,hostname,() => {
 
 var group = "group1"
 io.on('connection', function (socket) {
+  console.log("connect");
   socket.emit('join',{ c_status: "connection",group:group });
   socket.on('draw', function (data) {
     socket.in(group).emit('draw', data);

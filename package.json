@@ -4,12 +4,13 @@
   "description": "",
   "main": "allRegion.js",
   "scripts": {
-    "dev": "nodemon --exec node socket.js"
+    "dev": "nodemon --exec node src/server/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "mysql": "^2.14.1",
+    "nodemon": "^1.17.5",
     "socket.io": "^2.0.3"
   }
 }

@@ -1,7 +1,7 @@
 const http = require('http');
 const URL = require('url');
 const setSocket = require("./socket");
-const parseRequest = require("./server");
+// const parseRequest = require("./server");
 
 const hostname = getIPAdress();
 const port = 9000;
@@ -23,7 +23,7 @@ const server = http.createServer((req, res) => {
     if(parseUrl.indexOf("/socket") == 0){
       socket(req,res);
     }else{
-      parseRequest(req,res);
+      // parseRequest(req,res);
     }
 });
 
