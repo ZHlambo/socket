@@ -3,8 +3,6 @@
 
 <head>
     <title>h5 demo</title>
-    <script src="../../data.js" charset="utf-8"></script>
-    <script src="https://cdn.bootcss.com/socket.io/2.0.3/socket.io.slim.js"></script>
     <link rel="stylesheet" href="./index.css">
 </head>
 
@@ -45,214 +43,32 @@
             <a id='restore' class="btn">撤销</a>
             <span id='question'>暂无谜题</span>
         </div>
+        <div>
+            <a id='login' class="btn">登录</a>
+            <span id='question'>暂无谜题</span>
+        </div>
+
         <script>
-            var socket = io("http://192.168.31.57:9000",{path:"/socket"});
-            window.socket = socket;
-            socket.on('connect', (data) => {
-              console.log("connect success",JSON.stringify(data));
-            })
-            socket.on('join', (data) => {
-              socket.emit(data.group)
-              console.log("join",JSON.stringify(data));
-            })
-            socket.on('draw', (data) => {
-              socketDraw(data)
-            })
-            socket.on('msg',function(data){
-                console.log('msg',data);
-            });
-            // socket.on('connecting', (data) => {
-            //   console.log("connecting",JSON.stringify(data));
-            // })
-            // socket.on('connect_failed', (data) => {
-            //   console.log("connect_failed",JSON.stringify(data));
-            // })
-            // socket.on('error', (data) => {
-            //   console.log("error",JSON.stringify(data));
-            // })
-            // socket.on('auth', (data, fn) => {
-            //   console.log("auth",JSON.stringify(data));
-            //   fn({token: user.token})
-            // })
-        </script>
-        <script>
-            var canvasA = [];
-            window.lineWidth = 3;
-            window.lineColor = 'red';
-            var changeline = function(value) {
-                window.lineWidth = value
-            }
-            var changeColor = function(value) {
-                window.lineColor = value
-                ctx.strokeStyle = value
-            }
-            var canvas = document.getElementById('canvas');
-            window.canvas = canvas;
-            canvas.addEventListener('mousemove', onMouseMove, false);
-            canvas.addEventListener('mousedown', onMouseDown, false);
-            canvas.addEventListener('mouseup', onMouseUp, false);
-
-            canvas.addEventListener('touchstart', onMouseDown, false);
-            canvas.addEventListener('touchmove', onMouseMove, false);
-            canvas.addEventListener('touchend', onMouseUp, false)
-
-
-            canvas.height = getWidth();
-            canvas.width = getWidth();
-            var ctx = canvas.getContext('2d');
-
-            ctx.lineWidth = window.lineWidth; // 设置线宽
-            ctx.strokeStyle = window.lineColor; // 设置线的颜色
-
-            var flag = false;
-
-            function onMouseMove(evt) {
-                evt.preventDefault();
-                if (flag) {
-                    var p = pos(evt);
-                    socketDraw({action:"MOVE",p:p});//向服务器发送消息
-                }
-            }
-
-            function onMouseDown(evt) {
-                evt.preventDefault();
-                var p = pos(evt);
-                socketDraw({action:"DOWN",p:p});//向服务器发送消息
-            }
-
-
-            function onMouseUp(evt) {
-                evt.preventDefault();
-                socketDraw({action:"UP"});
-                flag = false;
-            }
-            function socketDraw(data){
-              if(data.width && data.p){//手机屏幕尺寸不一样需要缩放
-                var scale = canvas.width/data.width
-                data.p.x = data.p.x*scale
-                data.p.y = data.p.y*scale
-                window.lineWidth = data.lineWidth
-                window.lineColor = data.lineColor
-                ctx.lineWidth = window.lineWidth;
-                ctx.strokeStyle = window.lineColor;
-              }
-              if(data.action == "DOWN"){
-                canvasA.push(canvas.toDataURL('image/jpg'))
-                ctx.beginPath();
-                ctx.moveTo(data.p.x, data.p.y);
-                flag = true;
-              }else if(data.action == "MOVE"){
-                ctx.lineTo(data.p.x, data.p.y);
-                ctx.lineWidth = window.lineWidth; // 设置线宽
-                ctx.stroke();
-              }else if(data.action == "CLEAR"){
-                clear();
-              }else if(data.action == "RESTORE"){
-                restore();
-              }
-              if(socket.emit && !data.width){
-                data.width = canvas.width
-                data.lineWidth = window.lineWidth
-                data.lineColor = window.lineColor
-                socket.emit('draw',data);//向服务器发送消息
-              }
-            }
-
-            var clear = function() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }
-            var restore = function() {
-                if (canvasA.length != 0) {
-                    var img = new Image();
-                    img.onload = function() {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, "0", "0");
-                    };
-                    img.src = canvasA.pop();
-                }
-            }
-            document.getElementById('c').addEventListener('click', function(){socketDraw({action:"CLEAR"})}, false);
-            document.getElementById('restore').addEventListener('click',function(){socketDraw({action:"RESTORE"})}, false);
-
-
-            function pos(event) {
-                var x, y;
-                if (isTouch(event)) {
-                    x = event.touches[0].pageX;
-                    y = event.touches[0].pageY;
-                } else {
-                    x = event.layerX;
-                    y = event.layerY;
-                }
-                return {
-                    x: x,
-                    y: y
-                };
-            }
-            function isTouch(event) {
-                var type = event.type;
-                if (type.indexOf('touch') >= 0) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            function getWidth() {
-                var xWidth = null;
-
-                if (window.innerWidth !== null) {
-                    xWidth = window.innerWidth;
-                } else {
-                    xWidth = document.body.clientWidth;
-                }
-
-                return xWidth;
-            }
-        </script>
-
-        <script type="text/javascript">
-        var array = new Set()
-        for (var i = 0; i < questions.length; i++) {
-          array.add(questions[i].value)
-        }
-        console.log(questions,array);
-        this.time = 10;
-        this.showPrompt = 0.5;//计时器的一半就展示prompt
-        var users = [{name:"lambo",id:1},{name:"drod",id:2},{name:"尐",id:3},{name:"zongheng",id:4}];
-        var getRandom = function(){
-          var random = Math.round(Math.random()*questions.length)
-          var question = questions[random]
-          questions.splice(random)
-          var spliceQ = questions.splice(0,random)
-          questions = questions.concat(spliceQ);
-          console.log(questions);
-          for (var i = 0; i < questions.length; i++) {
-            if(!questions[i])console.log(questions[i]);
+          function getQueryString(name) {
+              var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+              var r = window.location.search.substr(1).match(reg);
+              if (r != null) return unescape(r[2]);
+              return null;
           }
-          return question
-        }
-        var setView = function(){
-          var time = data.time,user = users[data.index%users.length],question = data.question;
-          document.getElementById("time").innerHTML = time + "s"
-          var userText = "当前画师："+user.name;
-          var questionText = "谜题："+ question.value + "　提示："+ question.tip + (time < this.time*this.showPrompt ? "　"+ question.prompt : "");
-          if(document.getElementById("user").innerHTML != userText) document.getElementById("user").innerHTML = userText;
-          if(document.getElementById("question").innerHTML != questionText) document.getElementById("question").innerHTML = questionText;
-        }
-        var data = {time:this.time,index:0,question:getRandom()}
-        setView();
-        // setInterval(function(){
-        //   if(data.time != 0){
-        //     data.time--;
-        //     setView();
-        //   }else{
-        //     data.index++;
-        //     data.time = this.time;
-        //     data.question = getRandom();
-        //     setView();
-        //   }
-        // },1000)
+          var group = getQueryString("group");
+          var drawList = [],users = [], user = {};
+
+          document.getElementById('login').addEventListener('click', function () {
+            var value = prompt("请输入名称");
+            user = {name: value};
+            socket.emit("login", user);
+          });
         </script>
+        <script src="../../data.js" charset="utf-8"></script>
+        <script src="https://cdn.bootcss.com/socket.io/2.0.3/socket.io.slim.js"></script>
+        <script src="./canvas.js" charset="utf-8"></script>
+        <script src="./socket.js" charset="utf-8"></script>
+        <script src="./question.js" charset="utf-8"></script>
     </body>
 
 </html>

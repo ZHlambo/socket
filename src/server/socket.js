@@ -1,5 +1,10 @@
+
+
+const groupList = {};
+
+
 const socket = function(server){
-  const io = require('socket.io')(server, {
+    const io = require('socket.io')(server, {
     path: '/socket',
     serveClient: false,
     // below are engine.IO options
@@ -7,15 +12,37 @@ const socket = function(server){
     pingTimeout: 5000,
     cookie: false
   });
-
-  var group = "group1"
   io.on('connection', function (socket) {
-    socket.emit('join',{ c_status: "connection",group:group });
-    socket.on('draw', function (data) {
-      socket.in(group).emit('draw', data);
-    });
-    socket.on(group, function (data) {
+    var opener = true;
+    var id = "id" + new Date().getTime();
+    var group = "";
+
+    socket.emit('success',{ socket_status: "connection", id });
+    socket.on("join", function (data) {
+      opener = data.group == id;
+      group = (data.group || id).replace("id", "group");
+      groupList[group] = groupList[group] || {group,drawList: [], users: {}};
       socket.join(group);
+    });
+    // 获取已有数据
+    socket.on("getData", function (data) {
+      socket.emit('initial', groupList[group]);
+    });
+
+    socket.on('login', function (data) {
+      groupList[group].users[id] = data;
+      socket.in(group).emit('users', groupList[group].users);
+    });
+
+    socket.on('draw', function (data) {
+      if (data.action === "RESTORE") {
+        groupList[group].drawList.splice(data.index, groupList[group].drawList.length);
+      } else if (data.action === "CLEAR") {
+        groupList[group].drawList = [];
+      } else {
+        groupList[group].drawList.push(data);
+      }
+      socket.in(group).emit('draw', data);
     });
   });
   function broadcast(message, socket) {
