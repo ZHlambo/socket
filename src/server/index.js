@@ -30,5 +30,5 @@ const server = http.createServer((req, res) => {
 setSocket(server);
 
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`Server running at http://${hostname}:${port}/ ` + new Date().toLocaleTimeString());
 });

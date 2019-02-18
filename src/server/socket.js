@@ -1,6 +1,10 @@
 
 
 const groupList = {};
+const socketList = {};
+
+function checkSocket(group, socket, id) {
+}
 
 
 const socket = function(server){
@@ -21,17 +25,28 @@ const socket = function(server){
     socket.on("join", function (data) {
       opener = data.group == id;
       group = (data.group || id).replace("id", "group");
-      groupList[group] = groupList[group] || {group,drawList: [], users: {}};
+      if (groupList[group]) {
+        groupList[group].users[id] = data.login || {};
+        socketList[group].push(socket);
+      } else {
+        groupList[group] =  {group,drawList: [], data: {opener: id}, users: {[id]: data.login || {}}};
+        socketList[group] = [socket];
+      }
       socket.join(group);
+      socket.in(group).emit('users', groupList[group].users);
     });
     // 获取已有数据
     socket.on("getData", function (data) {
+      checkSocket(group, socket, id);
+      console.log(groupList[group].group , groupList[group].users);
       socket.emit('initial', groupList[group]);
     });
 
-    socket.on('login', function (data) {
+    socket.on('login', function (data, cb) {
       groupList[group].users[id] = data;
+      checkSocket(group, socket, id);
       socket.in(group).emit('users', groupList[group].users);
+      cb({code: 200});
     });
 
     socket.on('draw', function (data) {
@@ -40,27 +55,25 @@ const socket = function(server){
       } else if (data.action === "CLEAR") {
         groupList[group].drawList = [];
       } else {
+        groupList[group].drawList = groupList[group].drawList || [];
         groupList[group].drawList.push(data);
       }
+      checkSocket(group, socket, id);
       socket.in(group).emit('draw', data);
     });
-  });
-  function broadcast(message, socket) {
-    var cleanup = []
-    for(var i=0;i<socketList.length;i+=1) {
-      if(socket !== socketList[i]) {
-        if(socketList[i].writable) { // 先检查 sockets 是否可写
-          socketList[i].emit('message',socket.name + " says " + message+"\n");
-        } else {
-          cleanup.push(socketList[i]) // 如果不可写，收集起来销毁。销毁之前要 Socket.destroy() 用 API 的方法销毁。
-          socketList[i].destroy()
-        }
 
+    socket.on('disconnect', function () { // 这里监听 disconnect，就可以知道谁断开连接了
+      if (groupList[group] && groupList[group].users[id]) {
+        delete groupList[group].users[id];
       }
-    }  //Remove dead Nodes out of write loop to avoid trashing loop index
-    for(i=0;i<cleanup.length;i+=1) {
-      socketList.splice(socketList.indexOf(cleanup[i]), 1)
-    }
-  }
+      for (let i = 0; i < socketList[group].length; i++) {
+        if (socketList[group][i] == socket) {
+          socketList[group].splice(i, 1);
+          break;
+        }
+        socket.in(group).emit('users', groupList[group].users);
+      }
+    });
+  });
 }
 module.exports = socket;

@@ -47,23 +47,11 @@
             <a id='login' class="btn">登录</a>
             <span id='question'>暂无谜题</span>
         </div>
+        <div>
+            <a id='start' class="btn">开始</a>
+            <span id='users'>当前用户</span>
+        </div>
 
-        <script>
-          function getQueryString(name) {
-              var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-              var r = window.location.search.substr(1).match(reg);
-              if (r != null) return unescape(r[2]);
-              return null;
-          }
-          var group = getQueryString("group");
-          var drawList = [],users = [], user = {};
-
-          document.getElementById('login').addEventListener('click', function () {
-            var value = prompt("请输入名称");
-            user = {name: value};
-            socket.emit("login", user);
-          });
-        </script>
         <script src="../../data.js" charset="utf-8"></script>
         <script src="https://cdn.bootcss.com/socket.io/2.0.3/socket.io.slim.js"></script>
         <script src="./canvas.js" charset="utf-8"></script>

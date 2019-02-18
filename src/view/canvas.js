@@ -53,6 +53,7 @@ function drawCanvas(data){
     ctx.moveTo(data.p.x, data.p.y);
     flag = true;
   }else if(data.action == "MOVE"){
+    window.lineWidth = data.lineWidth || window.lineWidth;
     ctx.lineTo(data.p.x, data.p.y);
     ctx.lineWidth = window.lineWidth; // 设置线宽
     ctx.stroke();
